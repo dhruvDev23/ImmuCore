@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+        index.html — ImmuCore Frontend Shell
+        ======================================
+
+        This is the main (and only) HTML page for ImmuCore. It contains:
+          1. A header with the project name and a short tagline
+          2. An input form where the user enters their health-check values
+          3. A results panel that shows the prediction (hidden until submit)
+          4. A medical disclaimer that's always visible
+
+        Right now (Week 1), this is a static shell. The form doesn't call
+        any API — it just validates the inputs and shows a placeholder
+        result. In Week 3, Dhruv will wire the form's submit handler to
+        the live FastAPI backend.
+
+        The 8 input fields match the Pima Indians Diabetes dataset exactly:
+          - Pregnancies, Glucose, Blood Pressure, Skin Thickness,
+            Insulin, BMI, Diabetes Pedigree Function, Age
+
+        Design notes:
+          - Dark theme with teal/cyan accent colors
+          - Responsive layout — works on phones without extra CSS
+          - No external frameworks — just vanilla HTML, CSS, and JS
+    -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO meta tags -->
+    <title>ImmuCore — ML-Powered Health Risk Prediction</title>
+    <meta name="description" content="ImmuCore uses machine learning to predict diabetes risk from standard health-check values. Enter your numbers, get an instant risk assessment with plain-language precautions.">
+
+    <!-- Google Fonts — Inter for a clean, modern feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Our stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ============================================================
+         HEADER
+         The top section with the logo/name and a brief description.
+    ============================================================ -->
+    <header class="site-header">
+        <div class="header-content">
+            <!-- Logo area — just text for now, no image needed -->
+            <div class="logo">
+                <span class="logo-icon">🛡️</span>
+                <h1>ImmuCore</h1>
+            </div>
+            <p class="tagline">ML-Powered Diabetes Risk Prediction</p>
+        </div>
+    </header>
+
+
+    <!-- ============================================================
+         MAIN CONTENT
+         Contains the input form and the results panel side by side
+         on desktop, stacked on mobile.
+    ============================================================ -->
+    <main class="main-content">
+
+        <!-- --------------------------------------------------------
+             INPUT FORM SECTION
+             8 numeric fields matching the Pima dataset features.
+             Each field has:
+               - A label explaining what it is
+               - A placeholder showing the expected range
+               - A hint below it with more context
+        -------------------------------------------------------- -->
+        <section class="form-section" aria-labelledby="form-title">
+            <h2 id="form-title" class="section-title">
+                <span class="section-icon">📋</span>
+                Enter Your Health Check Values
+            </h2>
+            <p class="section-description">
+                Fill in your recent health check numbers below. All fields use
+                standard units from a typical lab report.
+            </p>
+
+            <form id="health-form" novalidate>
+                <!-- We use a CSS grid for the form layout — 2 columns on
+                     desktop, 1 on mobile. Each field is a "form-group". -->
+
+                <div class="form-grid">
+
+                    <!-- Field 1: Pregnancies -->
+                    <div class="form-group">
+                        <label for="pregnancies">Pregnancies</label>
+                        <input
+                            type="number"
+                            id="pregnancies"
+                            name="pregnancies"
+                            min="0"
+                            max="20"
+                            step="1"
+                            placeholder="e.g. 2"
+                            required
+                        >
+                        <span class="field-hint">Number of times pregnant (0 if none or male)</span>
+                    </div>
+
+                    <!-- Field 2: Glucose -->
+                    <div class="form-group">
+                        <label for="glucose">Glucose</label>
+                        <input
+                            type="number"
+                            id="glucose"
+                            name="glucose"
+                            min="0"
+                            max="300"
+                            step="1"
+                            placeholder="e.g. 120"
+                            required
+                        >
+                        <span class="field-hint">Plasma glucose concentration (mg/dL) — 2hr oral GTT</span>
+                    </div>
+
+                    <!-- Field 3: Blood Pressure -->
+                    <div class="form-group">
+                        <label for="blood-pressure">Blood Pressure</label>
+                        <input
+                            type="number"
+                            id="blood-pressure"
+                            name="blood_pressure"
+                            min="0"
+                            max="200"
+                            step="1"
+                            placeholder="e.g. 72"
+                            required
+                        >
+                        <span class="field-hint">Diastolic blood pressure (mm Hg)</span>
+                    </div>
+
+                    <!-- Field 4: Skin Thickness -->
+                    <div class="form-group">
+                        <label for="skin-thickness">Skin Thickness</label>
+                        <input
+                            type="number"
+                            id="skin-thickness"
+                            name="skin_thickness"
+                            min="0"
+                            max="100"
+                            step="1"
+                            placeholder="e.g. 29"
+                            required
+                        >
+                        <span class="field-hint">Triceps skin fold thickness (mm)</span>
+                    </div>
+
+                    <!-- Field 5: Insulin -->
+                    <div class="form-group">
+                        <label for="insulin">Insulin</label>
+                        <input
+                            type="number"
+                            id="insulin"
+                            name="insulin"
+                            min="0"
+                            max="900"
+                            step="1"
+                            placeholder="e.g. 80"
+                            required
+                        >
+                        <span class="field-hint">2-hour serum insulin (μU/mL) — enter 0 if unknown</span>
+                    </div>
+
+                    <!-- Field 6: BMI -->
+                    <div class="form-group">
+                        <label for="bmi">BMI</label>
+                        <input
+                            type="number"
+                            id="bmi"
+                            name="bmi"
+                            min="0"
+                            max="70"
+                            step="0.1"
+                            placeholder="e.g. 26.5"
+                            required
+                        >
+                        <span class="field-hint">Body Mass Index (weight in kg / height in m²)</span>
+                    </div>
+
+                    <!-- Field 7: Diabetes Pedigree Function -->
+                    <div class="form-group">
+                        <label for="dpf">Diabetes Pedigree Function</label>
+                        <input
+                            type="number"
+                            id="dpf"
+                            name="diabetes_pedigree_function"
+                            min="0"
+                            max="2.5"
+                            step="0.001"
+                            placeholder="e.g. 0.350"
+                            required
+                        >
+                        <span class="field-hint">Family history score (0.08 – 2.42) — higher = more family history</span>
+                    </div>
+
+                    <!-- Field 8: Age -->
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input
+                            type="number"
+                            id="age"
+                            name="age"
+                            min="1"
+                            max="120"
+                            step="1"
+                            placeholder="e.g. 33"
+                            required
+                        >
+                        <span class="field-hint">Age in years</span>
+                    </div>
+
+                </div>
+                <!-- end .form-grid -->
+
+                <!-- Submit and Reset buttons -->
+                <div class="form-actions">
+                    <button type="submit" id="submit-btn" class="btn btn-primary">
+                        <span class="btn-text">Analyze Risk</span>
+                        <span class="btn-loader" aria-hidden="true"></span>
+                    </button>
+                    <button type="reset" id="reset-btn" class="btn btn-secondary">
+                        Clear All
+                    </button>
+                </div>
+
+            </form>
+        </section>
+
+
+        <!-- --------------------------------------------------------
+             RESULTS PANEL
+             Hidden by default. Shows up after the user submits the
+             form. Contains:
+               - A color-coded severity badge (green/amber/red)
+               - The confidence score
+               - A plain-language explanation
+               - A list of precautions
+               - The medical disclaimer
+
+             In Week 1, this shows placeholder/demo content.
+             In Week 3, it will show real API responses.
+        -------------------------------------------------------- -->
+        <section class="results-section hidden" id="results-panel" aria-labelledby="results-title">
+            <h2 id="results-title" class="section-title">
+                <span class="section-icon">📊</span>
+                Risk Assessment
+            </h2>
+
+            <!-- Severity badge — the big color-coded indicator -->
+            <div class="severity-card" id="severity-card">
+                <div class="severity-badge" id="severity-badge">
+                    <!-- Text like "LOW RISK" or "HIGH RISK" goes here -->
+                </div>
+                <div class="confidence-score">
+                    Confidence: <span id="confidence-value">—</span>
+                </div>
+            </div>
+
+            <!-- Plain-language explanation from the AI layer -->
+            <div class="explanation-card" id="explanation-card">
+                <h3>What This Means</h3>
+                <p id="explanation-text">
+                    <!-- AI-generated explanation goes here -->
+                </p>
+            </div>
+
+            <!-- Precautions list -->
+            <div class="precautions-card" id="precautions-card">
+                <h3>Recommended Precautions</h3>
+                <ul id="precautions-list">
+                    <!-- AI-generated precautions go here as <li> items -->
+                </ul>
+            </div>
+
+            <!-- Action buttons below the results -->
+            <div class="results-actions">
+                <button id="new-check-btn" class="btn btn-secondary" type="button">
+                    ← New Check
+                </button>
+            </div>
+        </section>
+
+
+        <!-- --------------------------------------------------------
+             ERROR STATE
+             Shown when something goes wrong (validation error,
+             API failure, etc.). Hidden by default.
+        -------------------------------------------------------- -->
+        <div class="error-banner hidden" id="error-banner" role="alert">
+            <span class="error-icon">⚠️</span>
+            <span class="error-message" id="error-message">Something went wrong.</span>
+            <button class="error-dismiss" id="error-dismiss" type="button" aria-label="Dismiss error">✕</button>
+        </div>
+
+    </main>
+
+
+    <!-- ============================================================
+         MEDICAL DISCLAIMER
+         Always visible at the bottom of the page. This is required
+         on every screen per the project's guardrail rules.
+    ============================================================ -->
+    <footer class="disclaimer-footer">
+        <div class="disclaimer-content">
+            <p class="disclaimer-icon">⚕️</p>
+            <p class="disclaimer-text">
+                <strong>Medical Disclaimer:</strong>
+                ImmuCore is a student/demo project and does <strong>not</strong>
+                provide medical advice, diagnosis, or treatment. The risk
+                assessment is generated by a machine learning model trained on
+                limited data and should <strong>never</strong> replace
+                professional medical consultation. Always consult a qualified
+                healthcare provider for any health concerns.
+            </p>
+        </div>
+    </footer>
+
+
+    <!-- Our JavaScript — form validation and placeholder interaction -->
+    <script src="script.js"></script>
+
+</body>
+</html>

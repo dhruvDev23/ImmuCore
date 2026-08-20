@@ -1,0 +1,702 @@
+/*
+  style.css — ImmuCore Stylesheet
+  =================================
+
+  This is the one and only stylesheet for the ImmuCore frontend.
+  No frameworks, no preprocessors — just plain CSS.
+
+  Design decisions:
+    - Dark theme (easier on the eyes for a health/medical UI)
+    - Teal/cyan accent color (#0ea5e9 family) — feels clinical but modern
+    - Inter font from Google Fonts for clean readability
+    - Responsive: single column on mobile, two columns on desktop
+    - Smooth transitions on interactive elements
+    - Color-coded severity badges: green (low), amber (moderate), red (high)
+
+  Structure of this file:
+    1. CSS custom properties (variables)
+    2. Reset and base styles
+    3. Layout (header, main, footer)
+    4. Form styles
+    5. Results panel styles
+    6. Severity badges
+    7. Error states
+    8. Buttons
+    9. Animations
+   10. Responsive breakpoints
+*/
+
+
+/* ============================================================
+   1. CSS CUSTOM PROPERTIES
+   Centralizing colors, spacing, and fonts so the whole theme
+   can be tweaked from one place.
+============================================================ */
+
+:root {
+    /* -- Colors -- */
+    --color-bg:             #0f172a;     /* Deep navy background */
+    --color-bg-card:        #1e293b;     /* Card/panel background */
+    --color-bg-input:       #334155;     /* Input field background */
+    --color-border:         #475569;     /* Subtle borders */
+    --color-border-focus:   #0ea5e9;     /* Input focus ring */
+
+    --color-text:           #f1f5f9;     /* Primary text (light) */
+    --color-text-muted:     #94a3b8;     /* Secondary/hint text */
+    --color-text-heading:   #e2e8f0;     /* Headings */
+
+    --color-accent:         #0ea5e9;     /* Primary accent (teal-blue) */
+    --color-accent-hover:   #38bdf8;     /* Accent hover state */
+    --color-accent-glow:    rgba(14, 165, 233, 0.25); /* Glow effect */
+
+    /* Severity colors */
+    --color-low:            #22c55e;     /* Green — low risk */
+    --color-low-bg:         rgba(34, 197, 94, 0.15);
+    --color-moderate:       #f59e0b;     /* Amber — moderate risk */
+    --color-moderate-bg:    rgba(245, 158, 11, 0.15);
+    --color-high:           #ef4444;     /* Red — high risk */
+    --color-high-bg:        rgba(239, 68, 68, 0.15);
+
+    /* Error colors */
+    --color-error:          #f87171;
+    --color-error-bg:       rgba(248, 113, 113, 0.12);
+
+    /* -- Spacing -- */
+    --space-xs:  0.25rem;
+    --space-sm:  0.5rem;
+    --space-md:  1rem;
+    --space-lg:  1.5rem;
+    --space-xl:  2rem;
+    --space-2xl: 3rem;
+
+    /* -- Typography -- */
+    --font-family:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-size-sm:     0.85rem;
+    --font-size-base:   1rem;
+    --font-size-lg:     1.15rem;
+    --font-size-xl:     1.5rem;
+    --font-size-2xl:    2rem;
+
+    /* -- Border radius -- */
+    --radius-sm:  6px;
+    --radius-md:  10px;
+    --radius-lg:  16px;
+    --radius-full: 50px;
+
+    /* -- Shadows -- */
+    --shadow-card:  0 4px 24px rgba(0, 0, 0, 0.3);
+    --shadow-glow:  0 0 20px var(--color-accent-glow);
+
+    /* -- Transitions -- */
+    --transition-fast:  150ms ease;
+    --transition-base:  250ms ease;
+    --transition-slow:  400ms ease;
+}
+
+
+/* ============================================================
+   2. RESET AND BASE STYLES
+   A minimal reset so we start from a consistent baseline.
+============================================================ */
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    min-height: 100vh;
+
+    /* Subtle background gradient for depth */
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(14, 165, 233, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+
+/* ============================================================
+   3. LAYOUT — HEADER, MAIN, FOOTER
+============================================================ */
+
+/* -- Header -- */
+.site-header {
+    text-align: center;
+    padding: var(--space-2xl) var(--space-lg) var(--space-xl);
+    /* A subtle gradient border at the bottom */
+    border-bottom: 1px solid var(--color-border);
+    background: linear-gradient(180deg, rgba(14, 165, 233, 0.08) 0%, transparent 100%);
+}
+
+.header-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.logo-icon {
+    font-size: 2.2rem;
+}
+
+.logo h1 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.5px;
+
+    /* Subtle gradient text effect */
+    background: linear-gradient(135deg, var(--color-text) 0%, var(--color-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.tagline {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-base);
+    font-weight: 400;
+}
+
+
+/* -- Main content area -- */
+.main-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-lg) var(--space-2xl);
+    position: relative; /* For the error banner positioning */
+}
+
+
+/* -- Section titles (shared between form and results) -- */
+.section-title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text-heading);
+    margin-bottom: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.section-icon {
+    font-size: 1.4rem;
+}
+
+.section-description {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-xl);
+    line-height: 1.5;
+}
+
+
+/* -- Footer / Disclaimer -- */
+.disclaimer-footer {
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-xl) var(--space-lg);
+    margin-top: var(--space-xl);
+    background: rgba(30, 41, 59, 0.5);
+}
+
+.disclaimer-content {
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+}
+
+.disclaimer-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.disclaimer-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+.disclaimer-text strong {
+    color: var(--color-text);
+}
+
+
+/* ============================================================
+   4. FORM STYLES
+   The input form with its grid layout, labels, and hints.
+============================================================ */
+
+.form-section {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-card);
+
+    /* Subtle entrance animation */
+    animation: fadeSlideUp 0.6s ease forwards;
+}
+
+/* Two-column grid for the form fields on desktop */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+/* Each field group: label + input + hint */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.form-group label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-heading);
+    letter-spacing: 0.02em;
+}
+
+.form-group input {
+    background: var(--color-bg-input);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 0.9rem;
+    font-size: var(--font-size-base);
+    font-family: var(--font-family);
+    color: var(--color-text);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    outline: none;
+    width: 100%;
+
+    /* Remove the spinner arrows on number inputs for a cleaner look */
+    -moz-appearance: textfield;
+}
+
+.form-group input::-webkit-outer-spin-button,
+.form-group input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Focus state — teal glow ring */
+.form-group input:focus {
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px var(--color-accent-glow);
+}
+
+/* Error state — red border when validation fails */
+.form-group input.input-error {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15);
+}
+
+/* Placeholder styling */
+.form-group input::placeholder {
+    color: #64748b;
+    font-weight: 300;
+}
+
+/* Hint text below each field */
+.field-hint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    line-height: 1.3;
+}
+
+/* Form action buttons container */
+.form-actions {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
+
+/* ============================================================
+   5. RESULTS PANEL STYLES
+   The section that appears after submitting the form.
+============================================================ */
+
+.results-section {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-card);
+    animation: fadeSlideUp 0.5s ease forwards;
+}
+
+/* Cards within the results panel */
+.severity-card,
+.explanation-card,
+.precautions-card {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.severity-card {
+    text-align: center;
+    padding: var(--space-xl);
+}
+
+.confidence-score {
+    margin-top: var(--space-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+#confidence-value {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.explanation-card h3,
+.precautions-card h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-heading);
+    margin-bottom: var(--space-md);
+}
+
+.explanation-card p {
+    color: var(--color-text-muted);
+    line-height: 1.7;
+}
+
+.precautions-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.precautions-card li {
+    color: var(--color-text-muted);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    line-height: 1.5;
+}
+
+.precautions-card li:last-child {
+    border-bottom: none;
+}
+
+/* Small bullet icon before each precaution */
+.precautions-card li::before {
+    content: "•";
+    color: var(--color-accent);
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    line-height: 1.3;
+}
+
+.results-actions {
+    margin-top: var(--space-md);
+}
+
+
+/* ============================================================
+   6. SEVERITY BADGES
+   Color-coded badges that indicate risk level at a glance.
+============================================================ */
+
+.severity-badge {
+    display: inline-block;
+    padding: 0.6rem 1.8rem;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: transform var(--transition-base);
+}
+
+/* Green — low risk */
+.severity-badge.severity-low {
+    background: var(--color-low-bg);
+    color: var(--color-low);
+    border: 2px solid var(--color-low);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+}
+
+/* Amber — moderate risk */
+.severity-badge.severity-moderate {
+    background: var(--color-moderate-bg);
+    color: var(--color-moderate);
+    border: 2px solid var(--color-moderate);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+/* Red — high risk */
+.severity-badge.severity-high {
+    background: var(--color-high-bg);
+    color: var(--color-high);
+    border: 2px solid var(--color-high);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+.severity-badge:hover {
+    transform: scale(1.05);
+}
+
+
+/* ============================================================
+   7. ERROR STATES
+   The error banner that slides in from the top.
+============================================================ */
+
+.error-banner {
+    background: var(--color-error-bg);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-lg);
+    margin-bottom: var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    animation: fadeSlideDown 0.3s ease forwards;
+}
+
+.error-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.error-message {
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    flex-grow: 1;
+}
+
+.error-dismiss {
+    background: none;
+    border: none;
+    color: var(--color-error);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: var(--space-xs);
+    opacity: 0.7;
+    transition: opacity var(--transition-fast);
+}
+
+.error-dismiss:hover {
+    opacity: 1;
+}
+
+
+/* ============================================================
+   8. BUTTONS
+   Primary (teal) and secondary (outline) button styles.
+============================================================ */
+
+.btn {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    padding: 0.75rem 1.8rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    border: 2px solid transparent;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+/* Primary button — solid teal */
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-accent) 0%, #0284c7 100%);
+    color: white;
+    border-color: var(--color-accent);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--color-accent-hover) 0%, var(--color-accent) 100%);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Disabled state for the primary button */
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Secondary button — outline style */
+.btn-secondary {
+    background: transparent;
+    color: var(--color-text-muted);
+    border-color: var(--color-border);
+}
+
+.btn-secondary:hover {
+    border-color: var(--color-text-muted);
+    color: var(--color-text);
+    background: rgba(71, 85, 105, 0.15);
+}
+
+/* Loading spinner inside the primary button */
+.btn-loader {
+    display: none; /* Hidden by default */
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+/* When the form is submitting, show the loader and hide the text */
+.btn-primary.loading .btn-text {
+    opacity: 0.5;
+}
+
+.btn-primary.loading .btn-loader {
+    display: inline-block;
+}
+
+
+/* ============================================================
+   9. ANIMATIONS
+   Subtle entrance animations and the spinner keyframes.
+============================================================ */
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* A gentle pulse animation for the severity badge */
+@keyframes gentlePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.03);
+    }
+}
+
+.severity-badge {
+    animation: gentlePulse 3s ease-in-out infinite;
+}
+
+
+/* ============================================================
+   10. UTILITY CLASSES
+============================================================ */
+
+/* Hide an element completely */
+.hidden {
+    display: none !important;
+}
+
+
+/* ============================================================
+   11. RESPONSIVE BREAKPOINTS
+   Stack the form fields to a single column on small screens.
+============================================================ */
+
+/* Tablets and smaller (below 768px) */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* Single column */
+        gap: var(--space-md);
+    }
+
+    .main-content {
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .form-section,
+    .results-section {
+        padding: var(--space-lg);
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .disclaimer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Very small screens (below 400px) */
+@media (max-width: 400px) {
+    .logo h1 {
+        font-size: 1.6rem;
+    }
+
+    .severity-badge {
+        font-size: var(--font-size-base);
+        padding: 0.5rem 1.2rem;
+    }
+}
